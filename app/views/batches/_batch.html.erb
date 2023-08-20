@@ -1,0 +1,31 @@
+<tr id="<%= dom_id batch %>">
+  <td><%= batch.name %></td>
+  <% if current_user.student? %>
+    <td>
+      <% if batch.enrollment_for(current_user).present? %>
+        <%= batch.status_for(current_user) %>
+      <% else %>
+        <%= link_to 'Request for enrollment', course_batch_student_enrollment_path(@course, batch, current_user),data: { turbo_method: :post, turbo_confirm: 'Are you sure?' } %>
+      <% end %>
+    </td>
+  <% end %>
+  <td>
+    <%= link_to "Show", course_batch_path(@course, batch) %> | 
+
+    <% if can? :edit, batch %>
+      <%= link_to "Edit", edit_course_batch_path(@course, batch) %> | 
+    <% end %>
+
+    <% if can? :destroy, batch %>
+      <%= link_to "Destroy", course_batch_path(@course, batch), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %> |
+    <% end %> 
+
+    <% if can? :read, Student %>
+      <%= link_to 'Students', course_batch_students_path(@course, batch) %>
+    <% end %>
+
+    <% if (current_user.student? && batch.enrollment_accepted_for?(current_user)) || !current_user.student? %>
+      <%= link_to 'Classmates', course_batch_classmates_path(@course, batch) %>
+    <% end %>
+  </td>
+</tr>

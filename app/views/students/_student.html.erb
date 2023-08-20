@@ -1,0 +1,11 @@
+<tr id="<%= dom_id student %>">
+  <td> <%= student.full_name %> </td>
+  <td> <%= student.email %> </td>
+  <td> <%= batch.status_for(student) %></td>
+  <td>
+    <% if batch.enrollment_pending_for?(student) %>
+      <%= link_to 'Accept', course_batch_student_accept_path(@course, @batch, student), data: { turbo_method: :put, confirm: 'Are you sure?' } %> | 
+      <%= link_to 'Reject', course_batch_student_reject_path(@course, @batch, student), data: { turbo_method: :put, confirm: 'Are you sure?' } %>
+    <% end %>
+  </td>
+</tr>

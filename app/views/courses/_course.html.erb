@@ -1,0 +1,15 @@
+<tr id="<%= dom_id course %>">
+  <td><%= course.name %></td>
+  <td><%= course.description %></td>
+  <td>
+    <%= link_to "Show", school_course_path(@school, course) %> | 
+    <% if can? :edit, course %>
+      <%= link_to "Edit", edit_school_course_path(@school, course) %> |
+    <% end %>
+    <% if can? :destroy, course %>
+      <%= link_to "Destroy", school_course_path(@school, course), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %> | 
+    <% end %>
+
+    <%= link_to "Batches", course_batches_path(course) %>
+  </td>
+</tr>

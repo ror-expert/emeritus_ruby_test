@@ -1,0 +1,9 @@
+<div>
+  <p>Name: <%= @course.name %></p>
+  <p>Description: <%= @course.description %></p>
+</div>
+
+<div>
+  <%= link_to "Edit this course", edit_school_course_path(@school, @course) %> |
+  <%= link_to "Back to courses", school_courses_path(@school) %>
+</div>

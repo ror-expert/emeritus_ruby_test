@@ -1,0 +1,10 @@
+<div>
+  <p> Batch Name:  <%= @batch.name %> </p>
+</div>
+
+<p><b>Students:</b></p>
+<%= render 'students' %>
+<div>
+  <%= link_to "Edit this batch", edit_course_batch_path(@course, @batch) %> |
+  <%= link_to "Back to batches", course_batches_path(@course) %>
+</div>

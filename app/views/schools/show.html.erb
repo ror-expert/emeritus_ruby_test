@@ -1,0 +1,16 @@
+<div>
+  <p>School Name: <%= @school.name %></p>
+  <p>School Address: <%= @school.address %></p>
+</div>
+
+<div>
+  <% if can? :edit, School %>
+    <%= link_to "Edit this school", edit_school_path(@school) %> |
+  <% end %>
+  
+  <%= link_to "Back to schools", schools_path %>
+
+  <% if can? :destroy, School %>
+    <%= button_to "Destroy this school", @school, method: :delete %>
+  <% end %>
+</div>

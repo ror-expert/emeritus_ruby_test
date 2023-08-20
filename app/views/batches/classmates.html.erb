@@ -1,0 +1,22 @@
+<h1>Course Name: <%= @course.name %></h1>
+<h2>Batch Name: <%= @batch.name %> </h2>
+
+<h3>Classmates</h3>
+
+<div id="students">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col"> Name </th>
+        <th scope="col"> Email </th>
+        <th scope="col"> Status </th>
+        <th scope="col"> Action </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @students.each do | student | %>
+        <%= render partial: 'students/student', locals: { student: student, batch: @batch } %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

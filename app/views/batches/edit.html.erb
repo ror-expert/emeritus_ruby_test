@@ -1,0 +1,10 @@
+<h1>Editing batch</h1>
+
+<%= render "form", batch: @batch, url: course_batch_path(@course, @batch) %>
+
+<br>
+
+<div>
+  <%= link_to "Show this batch", course_batch_path(@course, @batch) %> |
+  <%= link_to "Back to batches", course_batches_path(@course) %>
+</div>

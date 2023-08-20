@@ -1,0 +1,20 @@
+<h1>School-Admins</h1>
+
+<div id="school-admins">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col"> First Name </th>
+        <th scope="col"> Last Name </th>
+        <th scope="col"> Email </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @school_admins.each do | school_admin | %>
+        <%= render partial: 'school_admin', locals: { school_admin: school_admin } %>
+      <% end %>
+    </tbody>
+  </table> 
+</div>
+
+<%= link_to "Add school Admin", new_school_admin_path %>
