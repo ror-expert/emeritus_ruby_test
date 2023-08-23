@@ -1,8 +1,9 @@
 class StudentsController < ApplicationController
   before_action :authenticate_user!
+  load_and_authorize_resource
+
   before_action :set_course
   before_action :set_batch
-  #before_action :set_student, only: %i[accept reject]
 
   # GET /students or /students.json
   def index
@@ -26,16 +27,6 @@ class StudentsController < ApplicationController
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @batch.errors, status: :unprocessable_entity }
       end
-    end
-  end
-
-  # DELETE /batches/1 or /batches/1.json
-  def destroy
-    @batch.destroy
-
-    respond_to do |format|
-      format.html { redirect_to course_batches_url(@course), notice: "Batch was successfully destroyed." }
-      format.json { head :no_content }
     end
   end
 
@@ -65,10 +56,6 @@ class StudentsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def student_params
       params.require(:student).permit(:first_name, :last_name, :email)
-    end
-
-    def set_course
-      @course ||= Course.where(school_id: current_user.schools.ids).find params[:course_id]
     end
 
     def set_school

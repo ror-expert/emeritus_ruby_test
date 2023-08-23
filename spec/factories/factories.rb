@@ -34,4 +34,9 @@ FactoryBot.define do
     school nil
   end
 
+  factory :batch_user do
+    association :student, factory: :user
+    batch nil
+  end
+
 end

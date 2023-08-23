@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  let(:user) { build(:user) }
 
   describe "Validations" do
+    let(:user) { build(:user) }
+  
     it "is not valid without a first_name" do
       user.first_name = nil
       expect(user).to_not be_valid
@@ -30,6 +31,8 @@ RSpec.describe User, type: :model do
   end
 
   describe "instance methods" do
+    let(:user) { build(:user) }
+
     it "returns full name" do
       user.first_name = "Rajeev"
       user.last_name  = "K."
@@ -42,24 +45,21 @@ RSpec.describe User, type: :model do
   end
 
   describe "scopes" do
-    before do
-      @student = create(:user)
-      @school_admin = create(:user, :school_admin)
-      @admin = create(:user, :admin)
-    end
-
     it "returns students" do
-      expect(User.students).to include(@student)
+      student = create(:user)
+      expect(User.students).to include(student)
       expect(User.students.count).to eq(1)
     end
 
     it "returns school admins" do
-      expect(User.school_admins).to include(@school_admin)
+      school_admin = create(:user, :school_admin)
+      expect(User.school_admins).to include(school_admin)
       expect(User.school_admins.count).to eq(1)
     end
 
     it "returns admins" do
-      expect(User.admins).to include(@admin)
+      admin = create(:user, :admin)
+      expect(User.admins).to include(admin)
       expect(User.admins.count).to eq(1)
     end
   end

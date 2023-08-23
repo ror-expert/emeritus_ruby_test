@@ -77,8 +77,4 @@ class BatchesController < ApplicationController
       params.require(:batch).permit(:name)
     end
 
-    def set_course
-      @course = Course.find params[:course_id] if current_user.admin?
-      @course ||= Course.where(school_id: current_user.schools.ids).find params[:course_id]
-    end
 end

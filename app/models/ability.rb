@@ -10,16 +10,19 @@ class Ability
       can :manage, Batch
       can :manage, Student
       can :manage, Course
+      cannot :enrollment, Student
     elsif user.school_admin?
       can [:read, :edit, :update], School, users: { school_users: { user: user } }
       can [:read, :edit, :update, :destroy], Course, school_id: user.schools.ids
       can :create, Course
       can :manage, Batch
       can :manage, Student
+      cannot :enrollment, Student
     else
       can :read, School, users: { school_users: { user: user } }
       can :read, Course, school_id: user.schools.ids
       can :read, Batch
+      can [:classmates, :enrollment], Student
     end
 
     # Define abilities for the user here. For example:

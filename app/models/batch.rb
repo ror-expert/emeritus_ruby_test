@@ -6,15 +6,15 @@ class Batch < ApplicationRecord
   has_many :students, class_name: 'User', foreign_key: 'user_id', through: :batch_users
 
   def status_for(student)
-    enrollment_for(student).aasm_state.capitalize
+    enrollment_for(student)&.aasm_state.capitalize
   end
 
   def enrollment_pending_for?(student)
-    enrollment_for(student).pending?
+    enrollment_for(student)&.pending?
   end
 
   def enrollment_accepted_for?(student)
-    enrollment_for(student).accepted?
+    enrollment_for(student)&.accepted?
   end
 
   def enrollment_for(student)
