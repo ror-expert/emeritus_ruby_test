@@ -3,36 +3,36 @@ require "rails_helper"
 RSpec.describe BatchesController, type: :routing do
   describe "routing" do
     it "routes to #index" do
-      expect(get: "/batches").to route_to("batches#index")
+      expect(get: "/courses/1/batches").to route_to("batches#index", course_id: "1")
     end
 
     it "routes to #new" do
-      expect(get: "/batches/new").to route_to("batches#new")
+      expect(get: "/courses/1/batches/new").to route_to("batches#new", course_id: "1")
     end
 
     it "routes to #show" do
-      expect(get: "/batches/1").to route_to("batches#show", id: "1")
+      expect(get: "/courses/1/batches/1").to route_to("batches#show", course_id: "1", id: "1")
     end
 
     it "routes to #edit" do
-      expect(get: "/batches/1/edit").to route_to("batches#edit", id: "1")
+      expect(get: "/courses/1/batches/1/edit").to route_to("batches#edit", course_id: "1", id: "1")
     end
 
 
     it "routes to #create" do
-      expect(post: "/batches").to route_to("batches#create")
+      expect(post: "/courses/1/batches").to route_to("batches#create", course_id: "1")
     end
 
     it "routes to #update via PUT" do
-      expect(put: "/batches/1").to route_to("batches#update", id: "1")
+      expect(put: "/courses/1/batches/1").to route_to("batches#update", course_id: "1", id: "1")
     end
 
     it "routes to #update via PATCH" do
-      expect(patch: "/batches/1").to route_to("batches#update", id: "1")
+      expect(patch: "/courses/1/batches/1").to route_to("batches#update", course_id: "1", id: "1")
     end
 
     it "routes to #destroy" do
-      expect(delete: "/batches/1").to route_to("batches#destroy", id: "1")
+      expect(delete: "/courses/1/batches/1").to route_to("batches#destroy", course_id: "1", id: "1")
     end
   end
 end

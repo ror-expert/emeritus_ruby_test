@@ -2,10 +2,11 @@ require 'rails_helper'
 
 RSpec.describe "courses/show", type: :view do
   before(:each) do
+    @school = assign(:school, create(:school))
     @course = assign(:course, Course.create!(
       name: "Name",
       description: "MyText",
-      school: nil
+      school: @school
     ))
   end
 

@@ -17,115 +17,324 @@ RSpec.describe "/courses", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # Course. As you add validations to Course, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
-  }
+  let(:valid_attributes) { { name: 'test course', description: 'test1234' } }
 
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
+  let(:invalid_attributes) { { name: 'test course', description: '' } }
+
+  let(:school) { create(:school) }
+  let(:school_admin)   { create(:user, :school_admin) }
+  let(:admin)  { create(:user, :admin) }
+  let(:student) { create(:user) }
+
+  let!(:school_user) { create(:school_user, user: school_admin, school: school) }
+  let!(:student_school_user) { create(:school_user, user: student, school: school) }
+
+  let(:course) { create(:course, school: school) }
 
   describe "GET /index" do
-    it "renders a successful response" do
-      Course.create! valid_attributes
-      get courses_url
-      expect(response).to be_successful
+    context "As a Admin" do
+      it "renders a successful response" do
+        sign_in admin
+        get school_courses_url(school.id)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a successful response" do
+        sign_in school_admin
+        get school_courses_url(school.id)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a successful response" do
+        sign_in student
+        get school_courses_url(school.id)
+        expect(response).to be_successful
+      end
     end
   end
 
   describe "GET /show" do
-    it "renders a successful response" do
-      course = Course.create! valid_attributes
-      get course_url(course)
-      expect(response).to be_successful
+    context "As a Admin user" do
+      it "renders a successful response" do
+        sign_in admin
+        get school_course_url(school, course)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a successful response" do
+        sign_in school_admin
+        get school_course_url(school, course)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a successful response" do
+        sign_in student
+        get school_course_url(school, course)
+        expect(response).to be_successful
+      end
     end
   end
 
   describe "GET /new" do
-    it "renders a successful response" do
-      get new_course_url
-      expect(response).to be_successful
+    context "As a Admin" do
+      it "renders a successful response" do
+        sign_in admin
+        get new_school_course_url(school)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a successful response" do
+        sign_in school_admin
+        get new_school_course_url(school)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a un-successful response" do
+        sign_in student
+        get new_school_course_url(school)
+        expect(response).not_to be_successful
+      end
     end
   end
 
   describe "GET /edit" do
-    it "renders a successful response" do
-      course = Course.create! valid_attributes
-      get edit_course_url(course)
-      expect(response).to be_successful
+    context "As a Admin" do
+      it "renders a successful response" do
+        sign_in admin
+        get edit_school_course_url(school, course)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a successful response" do
+        sign_in school_admin
+        get edit_school_course_url(school, course)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a un-successful response" do
+        sign_in student
+        get edit_school_course_url(school, course)
+        expect(response).not_to be_successful
+      end
     end
   end
 
   describe "POST /create" do
-    context "with valid parameters" do
-      it "creates a new Course" do
-        expect {
-          post courses_url, params: { course: valid_attributes }
-        }.to change(Course, :count).by(1)
+    context "As a Admin" do
+      context "with valid parameters" do
+        it "creates a new Course" do
+          sign_in admin
+          expect {
+            post school_courses_path(school), params: { course: valid_attributes }
+          }.to change(Course, :count).by(1)
+        end
+
+        it "redirects to the created course" do
+          sign_in admin
+          post school_courses_url(school), params: { course: valid_attributes }
+          expect(response).to redirect_to(school_courses_url(Course.last))
+        end
       end
 
-      it "redirects to the created course" do
-        post courses_url, params: { course: valid_attributes }
-        expect(response).to redirect_to(course_url(Course.last))
+      context "with invalid parameters" do
+        it "does not create a new Course" do
+          sign_in admin
+          expect {
+            post school_courses_url(school), params: { course: invalid_attributes }
+          }.to change(Course, :count).by(0)
+        end
+
+        it "renders a non-successful response (i.e. to display the 'new' template)" do
+          sign_in admin
+          post school_courses_url(school), params: { course: invalid_attributes }
+          expect(response).not_to be_successful
+        end
       end
     end
 
-    context "with invalid parameters" do
-      it "does not create a new Course" do
-        expect {
-          post courses_url, params: { course: invalid_attributes }
-        }.to change(Course, :count).by(0)
+    context "As a School Admin" do
+      context "with valid parameters" do
+        it "creates a new Course" do
+          sign_in school_admin
+          expect {
+            post school_courses_path(school), params: { course: valid_attributes }
+          }.to change(Course, :count).by(1)
+        end
+
+        it "redirects to the created course" do
+          sign_in school_admin
+          post school_courses_url(school), params: { course: valid_attributes }
+          expect(response).to redirect_to(school_courses_url(Course.last))
+        end
       end
 
-      it "renders a successful response (i.e. to display the 'new' template)" do
-        post courses_url, params: { course: invalid_attributes }
-        expect(response).to be_successful
+      context "with invalid parameters" do
+        it "does not create a new Course" do
+          sign_in school_admin
+          expect {
+            post school_courses_url(school), params: { course: invalid_attributes }
+          }.to change(Course, :count).by(0)
+        end
+
+        it "renders a non-successful response (i.e. to display the 'new' template)" do
+          sign_in school_admin
+          post school_courses_url(school), params: { course: invalid_attributes }
+          expect(response).not_to be_successful
+        end
+      end
+
+    end
+
+    context "As a Student" do
+      context "with valid parameters" do
+        it "does not create a new Course" do
+          sign_in student
+          expect {
+            post school_courses_path(school), params: { course: valid_attributes }
+          }.to change(Course, :count).by(0)
+        end
       end
     end
   end
 
   describe "PATCH /update" do
-    context "with valid parameters" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
+    context "As a Admin" do
+      context "with valid parameters" do
+        let(:new_attributes) { {name: "test-course-1"} }
 
-      it "updates the requested course" do
-        course = Course.create! valid_attributes
-        patch course_url(course), params: { course: new_attributes }
-        course.reload
-        skip("Add assertions for updated state")
+        it "updates the requested course" do
+          sign_in admin
+          patch school_course_url(school, course), params: { course: new_attributes }
+          course.reload
+          expect(course.name).to eq("test-course-1")
+        end
+
+        it "redirects to the course" do
+          sign_in admin
+          patch school_course_url(school, course), params: { course: new_attributes }
+          course.reload
+          expect(response).to redirect_to(school_course_url(school, course))
+        end
       end
 
-      it "redirects to the course" do
-        course = Course.create! valid_attributes
-        patch course_url(course), params: { course: new_attributes }
-        course.reload
-        expect(response).to redirect_to(course_url(course))
+      context "with invalid parameters" do
+        it "renders a un-successful response (i.e. to display the 'edit' template)" do
+          sign_in admin
+          patch school_course_url(school, course), params: { course: invalid_attributes }
+          expect(response).not_to be_successful
+        end
       end
     end
 
-    context "with invalid parameters" do
-      it "renders a successful response (i.e. to display the 'edit' template)" do
-        course = Course.create! valid_attributes
-        patch course_url(course), params: { course: invalid_attributes }
-        expect(response).to be_successful
+    context "As a School Admin" do
+      context "with valid parameters" do
+        let(:new_attributes) { {name: "test-course-1"} }
+
+        it "updates the requested course" do
+          sign_in school_admin
+          patch school_course_url(school, course), params: { course: new_attributes }
+          course.reload
+          expect(course.name).to eq("test-course-1")
+        end
+
+        it "redirects to the course" do
+          sign_in school_admin
+          patch school_course_url(school, course), params: { course: new_attributes }
+          course.reload
+          expect(response).to redirect_to(school_course_url(school, course))
+        end
+      end
+
+      context "with invalid parameters" do
+        it "renders a un-successful response (i.e. to display the 'edit' template)" do
+          sign_in school_admin
+          patch school_course_url(school, course), params: { course: invalid_attributes }
+          expect(response).not_to be_successful
+        end
+      end
+    end
+
+    context "As a Student" do
+      context "with valid parameters" do
+        let(:new_attributes) { {name: "test-course-1"} }
+
+        it "does not update the requested course" do
+          sign_in student
+          patch school_course_url(school, course), params: { course: new_attributes }
+          expect(response).not_to be_successful
+        end
       end
     end
   end
 
   describe "DELETE /destroy" do
-    it "destroys the requested course" do
-      course = Course.create! valid_attributes
-      expect {
-        delete course_url(course)
-      }.to change(Course, :count).by(-1)
+    context "As a Admin" do
+      it "destroys the requested course" do
+        sign_in admin
+        course
+        expect(Course.count).to eq(1)
+        expect {
+          delete school_course_url(school, course)
+        }.to change(Course, :count).by(-1)
+      end
+
+      it "redirects to the courses list" do
+        sign_in admin
+        delete school_course_url(school, course)
+        expect(response).to redirect_to(school_courses_url(school))
+      end
     end
 
-    it "redirects to the courses list" do
-      course = Course.create! valid_attributes
-      delete course_url(course)
-      expect(response).to redirect_to(courses_url)
+    context "As a School Admin" do
+      it "destroys the requested course" do
+        sign_in school_admin
+        course
+        expect(Course.count).to eq(1)
+        expect {
+          delete school_course_url(school, course)
+        }.to change(Course, :count).by(-1)
+      end
+
+      it "redirects to the courses list" do
+        sign_in school_admin
+        delete school_course_url(school, course)
+        expect(response).to redirect_to(school_courses_url(school))
+      end
     end
+
+    context "As a Student" do
+      it "does not destroy the requested course" do
+        sign_in student
+        course
+        expect(Course.count).to eq(1)
+        expect {
+          delete school_course_url(school, course)
+        }.to change(Course, :count).by(0)
+        expect(response).not_to be_successful
+      end
+
+      it "redirects to the courses list" do
+        sign_in student
+        delete school_course_url(school, course)
+        expect(response).to redirect_to(root_path)
+      end
+    end
+
   end
 end

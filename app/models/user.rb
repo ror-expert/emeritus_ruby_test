@@ -15,10 +15,12 @@ class User < ApplicationRecord
 
   scope :school_admins, -> { where(role: :school_admin) }
   scope :students, -> { where(role: :student) }
+  scope :admins, -> { where(role: :admin) }
+
   scope :accepted_only, -> { joins(:batch_users).where(batch_users: { aasm_state: 'accepted' }) }
 
   def full_name
-    first_name + last_name
+    first_name + " " + last_name
   end
 
 end

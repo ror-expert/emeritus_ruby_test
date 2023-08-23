@@ -17,115 +17,264 @@ RSpec.describe "/schools", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # School. As you add validations to School, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
-  }
 
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
+  let(:school) { create(:school) }
+  let(:school_admin)   { create(:user, :school_admin) }
+  let(:admin)  { create(:user, :admin) }
+  let(:student) { create(:user) }
+
+  let!(:school_user) { create(:school_user, user: school_admin, school: school) }
+  let!(:student_school_user) { create(:school_user, user: student, school: school) }
+
+  let(:valid_attributes) { {name: 'test school', address: 'test address'} }
+
+  let(:invalid_attributes) { {name: '', address: ''} }
 
   describe "GET /index" do
-    it "renders a successful response" do
-      School.create! valid_attributes
-      get schools_url
-      expect(response).to be_successful
+    context "As a Admin" do
+      it "renders a successful response" do
+        sign_in admin
+        get schools_url
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a successful response" do
+        sign_in school_admin
+        get schools_url
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a successful response" do
+        sign_in student
+        get schools_url
+        expect(response).to be_successful
+      end
     end
   end
 
   describe "GET /show" do
-    it "renders a successful response" do
-      school = School.create! valid_attributes
-      get school_url(school)
-      expect(response).to be_successful
+    context "As a Admin" do
+      it "renders a successful response" do
+        sign_in admin
+        get school_url(school)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a successful response" do
+        sign_in school_admin
+        get school_url(school)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a successful response" do
+        sign_in student
+        get school_url(school)
+        expect(response).to be_successful
+      end
     end
   end
 
   describe "GET /new" do
-    it "renders a successful response" do
-      get new_school_url
-      expect(response).to be_successful
+    context "As a Admin" do
+      it "renders a successful response" do
+        sign_in admin
+        get new_school_url
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a un-successful response" do
+        sign_in school_admin
+        get new_school_url
+        expect(response).not_to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a un-successful response" do
+        sign_in student
+        get new_school_url
+        expect(response).not_to be_successful
+      end
     end
   end
 
   describe "GET /edit" do
-    it "renders a successful response" do
-      school = School.create! valid_attributes
-      get edit_school_url(school)
-      expect(response).to be_successful
+    context "As a Admin" do
+      it "renders a successful response" do
+        sign_in admin
+        get edit_school_url(school)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a School Admin" do
+      it "renders a successful response" do
+        sign_in school_admin
+        get edit_school_url(school)
+        expect(response).to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "renders a un-successful response" do
+        sign_in student
+        get edit_school_url(school)
+        expect(response).not_to be_successful
+      end
     end
   end
 
   describe "POST /create" do
-    context "with valid parameters" do
-      it "creates a new School" do
-        expect {
-          post schools_url, params: { school: valid_attributes }
-        }.to change(School, :count).by(1)
-      end
+    context "As a Admin" do
+      context "with valid parameters" do
+        it "creates a new School" do
+          sign_in admin
+          expect {
+            post schools_url, params: { school: valid_attributes }
+          }.to change(School, :count).by(1)
+        end
 
-      it "redirects to the created school" do
-        post schools_url, params: { school: valid_attributes }
-        expect(response).to redirect_to(school_url(School.last))
+        it "redirects to the created school" do
+          sign_in admin
+          post schools_url, params: { school: valid_attributes }
+          expect(response).to redirect_to(school_url(School.last))
+        end
+      end
+    
+      context "with invalid parameters" do
+        it "does not create a new School" do
+          sign_in admin
+          expect {
+            post schools_url, params: { school: invalid_attributes }
+          }.to change(School, :count).by(0)
+        end
+
+        it "does not render a successful response (i.e. to display the 'new' template)" do
+          post schools_url, params: { school: invalid_attributes }
+          expect(response).not_to be_successful
+        end
       end
     end
 
-    context "with invalid parameters" do
-      it "does not create a new School" do
-        expect {
-          post schools_url, params: { school: invalid_attributes }
-        }.to change(School, :count).by(0)
+    context "As a School Admin" do
+      context "with valid parameters" do
+        it "can not create a new School" do
+          sign_in school_admin
+          expect {
+            post schools_url, params: { school: valid_attributes }
+          }.to change(School, :count).by(0)
+        end
       end
+    end
 
-      it "renders a successful response (i.e. to display the 'new' template)" do
-        post schools_url, params: { school: invalid_attributes }
-        expect(response).to be_successful
+    context "As a Student" do
+      context "with valid parameters" do
+        it "can not create a new School" do
+          sign_in student
+          expect {
+            post schools_url, params: { school: valid_attributes }
+          }.to change(School, :count).by(0)
+        end
       end
     end
   end
 
   describe "PATCH /update" do
-    context "with valid parameters" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
+    context "As a Admin" do
+      context "with valid parameters" do
+        let(:new_attributes) { { name: 'test-school-2'} }
 
-      it "updates the requested school" do
-        school = School.create! valid_attributes
-        patch school_url(school), params: { school: new_attributes }
-        school.reload
-        skip("Add assertions for updated state")
+        it "updates the requested school" do
+          sign_in admin
+          patch school_url(school), params: { school: new_attributes }
+          expect(school.reload.name).to eq('test-school-2')
+        end
+
+        it "redirects to the school" do
+          sign_in admin
+          patch school_url(school), params: { school: new_attributes }
+          expect(response).to redirect_to(school_url(school))
+        end
       end
 
-      it "redirects to the school" do
-        school = School.create! valid_attributes
-        patch school_url(school), params: { school: new_attributes }
-        school.reload
-        expect(response).to redirect_to(school_url(school))
+      context "with invalid parameters" do
+        it "renders a un-successful response (i.e. to display the 'edit' template)" do
+          sign_in admin
+          patch school_url(school), params: { school: invalid_attributes }
+          expect(response).not_to be_successful
+        end
       end
     end
 
-    context "with invalid parameters" do
-      it "renders a successful response (i.e. to display the 'edit' template)" do
-        school = School.create! valid_attributes
-        patch school_url(school), params: { school: invalid_attributes }
-        expect(response).to be_successful
+    context "As a School Admin" do
+      context "with valid parameters" do
+        let(:new_attributes) { { name: 'test-school-2'} }
+
+        it "can not update the requested school" do
+          sign_in school_admin
+          patch school_url(school), params: { school: new_attributes }
+          expect(response).not_to be_successful
+        end
+      end
+    end
+
+    context "As a Student" do
+      context "with valid parameters" do
+        let(:new_attributes) { { name: 'test-school-2'} }
+
+        it "can not update the requested school" do
+          sign_in student
+          patch school_url(school), params: { school: new_attributes }
+          expect(response).not_to be_successful
+        end
       end
     end
   end
 
   describe "DELETE /destroy" do
-    it "destroys the requested school" do
-      school = School.create! valid_attributes
-      expect {
+    context "As a Admin" do
+      it "destroys the requested school" do
+        sign_in admin
+        expect {
+          delete school_url(school)
+        }.to change(School, :count).by(-1)
+      end
+
+      it "redirects to the schools list" do
+        sign_in admin
         delete school_url(school)
-      }.to change(School, :count).by(-1)
+        expect(response).to redirect_to(schools_url)
+      end
     end
 
-    it "redirects to the schools list" do
-      school = School.create! valid_attributes
-      delete school_url(school)
-      expect(response).to redirect_to(schools_url)
+    context "As a School Admin" do
+      it "does not destroy the requested school" do
+        sign_in school_admin
+        expect {
+          delete school_url(school)
+        }.to change(School, :count).by(0)
+        expect(response).not_to be_successful
+      end
+    end
+
+    context "As a Student" do
+      it "does not destroy the requested school" do
+        sign_in student
+        expect {
+          delete school_url(school)
+        }.to change(School, :count).by(0)
+        expect(response).not_to be_successful
+      end
     end
   end
 end

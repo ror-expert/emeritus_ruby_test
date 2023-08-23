@@ -9,9 +9,11 @@ class Ability
       can :manage, User
       can :manage, Batch
       can :manage, Student
+      can :manage, Course
     elsif user.school_admin?
       can [:read, :edit, :update], School, users: { school_users: { user: user } }
-      can :manage, Course, school_id: user.schools.ids
+      can [:read, :edit, :update, :destroy], Course, school_id: user.schools.ids
+      can :create, Course
       can :manage, Batch
       can :manage, Student
     else

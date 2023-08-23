@@ -73,6 +73,7 @@ class CoursesController < ApplicationController
     end
 
     def set_school
+      @school = School.find params[:school_id] if current_user.admin?
       @school ||= current_user.schools.find params[:school_id]
     end
 end
